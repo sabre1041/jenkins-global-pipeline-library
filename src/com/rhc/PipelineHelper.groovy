@@ -17,7 +17,7 @@ def buildAndDeployImage( config ){
         startDefaultOpenShiftBuildAndDeploy( config )
     } else {
         echo 'Found buildImageCommands, executing in shell'
-        executeListOfShellCommands( config.buildImageCommands )
+        executeListOfShellCommands( config.buildImageCommands, config.appName, config.envs[0].projectName )
     }
 }
 
@@ -58,7 +58,7 @@ def executeBuildCommands( config ){
 
     if ( config.buildTool == null ){
         echo 'No build tool declared. Any commands will execute directly in the shell.'
-        executeListOfShellCommands( config.buildCommands )
+        executeListOfShellCommands( config.buildCommands, config.appName, config.envs[0].projectName )
     } else if ( config.buildTool in tools ) {
         echo "Using build tool: ${config.buildTool}"
         executeListOfToolCommands( config.buildCommands, config.buildTool )
@@ -67,10 +67,10 @@ def executeBuildCommands( config ){
     }
 }
 
-def executeListOfShellCommands( commandList ){
+def executeListOfShellCommands( commandList, appName, projectName ){
     for (int i=0; i<commandList.size(); i++){
         def command = commandList[i]
-        sh "${command}" 
+        sh "${command} ${appName} ${projectName}"
     }
 }
 
